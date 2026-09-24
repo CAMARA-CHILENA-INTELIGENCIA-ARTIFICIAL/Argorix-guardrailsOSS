@@ -1,0 +1,173 @@
+[project]
+name = "argorix-guardrails"
+version = "0.2.0"
+description = "Guardrail generativo en español sobre Qwen2.5-1.5B (QLoRA): datos, entrenamiento, evaluación y serving."
+readme = "README.md"
+requires-python = ">=3.11,<3.13"
+license = { text = "Proprietary" }
+authors = [{ name = "Gustavo Venegas" }]
+
+# Dependencias del núcleo: manipulación de datasets y CLI.
+# No incluyen torch a propósito; ver el grupo opcional "train".
+dependencies = [
+    "pandas>=2.2,<3.1",
+    "pyarrow>=16.0",
+    "pyyaml>=6.0",
+]
+
+[project.optional-dependencies]
+# ---------------------------------------------------------------------------
+# train: pila de fine-tuning. Requiere GPU NVIDIA en Linux o Windows.
+# torch se resuelve desde el índice CUDA (ver [tool.uv.sources] más abajo).
+# bitsandbytes no publica ruedas para macOS: se excluye por marcador.
+# ---------------------------------------------------------------------------
+train = [
+    "torch>=2.6,<3.0",
+    "transformers>=4.46,<5.0",
+    "datasets>=3.0,<5.0",
+    "accelerate>=1.0,<2.0",
+    "peft>=0.14,<0.20",
+    "trl>=0.12,<0.30",
+    "safetensors>=0.4",
+    "sentencepiece>=0.2",
+    "tqdm>=4.66",
+    "bitsandbytes>=0.45; sys_platform != 'darwin'",
+]
+
+# serve: consola de gobernanza (FastAPI + estáticos).
+serve = [
+    "fastapi>=0.115,<1.0",
+    "uvicorn[standard]>=0.30,<1.0",
+    "python-multipart>=0.0.9",
+    "pydantic>=2.8,<3.0",
+]
+
+# publish: subida de artefactos a Hugging Face.
+publish = ["huggingface-hub>=0.26,<1.0"]
+
+# analysis: utilidades estadísticas para análisis de resultados.
+analysis = ["scipy>=1.13"]
+
+[project.scripts]
+guardrails = "guardrails.cli:main"
+
+[dependency-groups]
+dev = [
+    "ruff>=0.14,<0.16",
+    "pytest>=8.3,<9.0",
+    "scipy>=1.13",
+]
+
+# ---------------------------------------------------------------------------
+# Build
+# ---------------------------------------------------------------------------
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/guardrails"]
+
+# ---------------------------------------------------------------------------
+# uv: índices por plataforma
+#
+# Windows y Linux resuelven torch desde el índice CUDA 12.8 de PyTorch, que es
+# el que fijan los lanzadores de scripts/.
+# macOS (máquina de análisis, sin CUDA) resuelve desde PyPI para que
+# `uv lock` y `uv sync` funcionen también ahí.
+# ---------------------------------------------------------------------------
+[[tool.uv.index]]
+name = "pytorch-cu128"
+url = "https://download.pytorch.org/whl/cu128"
+explicit = true
+
+[tool.uv.sources]
+torch = [
+    { index = "pytorch-cu128", marker = "sys_platform == 'linux' or sys_platform == 'win32'" },
+]
+
+[tool.uv]
+# Instalaciones de torch con CUDA son grandes; evita reintentos innecesarios.
+compile-bytecode = false
+
+# ---------------------------------------------------------------------------
+# Ruff
+# ---------------------------------------------------------------------------
+[tool.ruff]
+line-length = 110
+target-version = "py311"
+src = ["src", "tests"]
+extend-exclude = ["docs"]
+
+[tool.ruff.lint]
+select = [
+    "E",    # pycodestyle
+    "W",    # pycodestyle warnings
+    "F",    # pyflakes
+    "I",    # isort
+    "UP",   # pyupgrade
+    "B",    # flake8-bugbear
+    "C4",   # comprehensions
+    "SIM",  # simplify
+    "PTH",  # usar pathlib en vez de os.path
+    "RUF",  # reglas propias de ruff
+    "ARG",  # argumentos sin usar
+    "TID",  # imports ordenados/tidy
+    "N",    # naming
+]
+ignore = [
+    "E501",    # longitud de línea: la controla el formateador
+    "B008",    # llamada en argumento por defecto: patrón normal en FastAPI (Depends/File)
+    "RUF001",  # caracteres unicode ambiguos: el proyecto es en español
+    "RUF002",
+    "RUF003",
+]
+
+[tool.ruff.lint.per-file-ignores]
+# ---------------------------------------------------------------------------
+# Supresiones por archivo
+#
+# Cada entrada es deuda explícita, con su motivo. Se retira cuando el módulo
+# correspondiente se reescriba.
+# ---------------------------------------------------------------------------
+
+# I001: bloque de imports sin ordenar.
+"src/guardrails/data/ingest.py" = ["I001"]
+"src/guardrails/data/translate.py" = ["I001"]
+"src/guardrails/publishing/publish_hf.py" = ["I001"]
+# ARG002: SaveStateCallback implementa la interfaz TrainerCallback de
+# transformers, que fija la firma (args, state, control, **kwargs).
+# Los argumentos sin usar son parte del contrato, no un descuido.
+"src/guardrails/training/qlora.py" = ["ARG002"]
+# SIM105: try/except/pass en el drenaje de stderr del worker.
+"src/guardrails/serving/backend.py" = ["SIM105"]
+
+# Los tests de caracterización usan firmas impuestas por pytest, y
+# tests/conftest.py define sustitutos de dependencias pesadas cuyas firmas
+# vienen dadas por la biblioteca real.
+"tests/*" = ["ARG001", "ARG002", "ARG005", "N802"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["guardrails"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+# Módulos pendientes de formatear. Se incorporan al reescribirlos.
+exclude = [
+    "src/guardrails/data/translate.py",
+    "src/guardrails/serving/backend.py",
+    "src/guardrails/serving/worker.py",
+]
+
+# ---------------------------------------------------------------------------
+# Pytest
+# ---------------------------------------------------------------------------
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+addopts = "-q --strict-markers"
+markers = [
+    "characterization: fija el comportamiento actual para que un cambio futuro sea visible en el diff",
+    "integration: ejercita la pila de entrenamiento; requiere el extra `train`",
+]

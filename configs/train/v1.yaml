@@ -1,0 +1,22 @@
+# Registro de los parámetros con que se produjo models/guardrail-qwen25-1_5b-qlora-v1.
+# Fuente: scripts/{linux/full_train.sh, windows/full_train.ps1}.
+# Estado: registro declarativo. El código todavía no lee este archivo (ver README).
+run: v1
+dataset: data_finetune/guardrail_es.parquet
+model: Qwen/Qwen2.5-1.5B-Instruct
+output_dir: models/guardrail-qwen25-1_5b-qlora-v1
+adapter_init: null
+learning_rate: 2.0e-4
+max_steps: 3000
+epochs: 1
+max_eval_samples: 2000
+eval_steps: 250
+save_steps: 250
+logging_steps: 20
+train_batch_size: 2
+eval_batch_size: 2
+gradient_accumulation_steps: 16
+max_length: 512
+precision: bf16
+seed: 42
+# 3000 pasos x lote efectivo 32 = 96.000 ejemplos vistos.

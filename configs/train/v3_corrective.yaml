@@ -1,0 +1,22 @@
+# Registro de los parámetros con que se produjo
+# models/guardrail-qwen25-1_5b-qlora-v3-corrective.
+# Fuente: scripts/{linux/v3_corrective_train.sh, windows/v3_corrective_train.ps1}.
+# Estado: registro declarativo. El código todavía no lee este archivo (ver README).
+run: v3_corrective
+dataset: data_finetune/guardrail_es_v3_corrective.parquet
+model: Qwen/Qwen2.5-1.5B-Instruct
+output_dir: models/guardrail-qwen25-1_5b-qlora-v3-corrective
+adapter_init: models/guardrail-qwen25-1_5b-qlora-v2
+learning_rate: 5.0e-5
+max_steps: 1000
+epochs: 1
+max_eval_samples: 2000
+eval_steps: 100
+save_steps: 100
+logging_steps: 20
+train_batch_size: 2
+eval_batch_size: 2
+gradient_accumulation_steps: 16
+max_length: 512
+precision: bf16
+seed: 42

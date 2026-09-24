@@ -1,0 +1,15 @@
+# Parámetros de la evaluación publicada en reports/v3_golden_metrics.json.
+# Estado: reconstruido a partir de los artefactos, no de un comando registrado.
+# Ningún script de orquestación invocaba la evaluación, de modo que los
+# argumentos exactos de la ejecución original no se conocen.
+adapter: models/guardrail-qwen25-1_5b-qlora-v3-corrective
+base_model: Qwen/Qwen2.5-1.5B-Instruct
+input_csv: eval_golden_es.csv
+predictions: reports/v3_golden_predictions.jsonl
+metrics: reports/v3_golden_metrics.json
+max_new_tokens: 96
+load_4bit: unknown          # no registrado
+golden_set:
+  rows: 1000
+  allow: 600
+  block: 400

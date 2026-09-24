@@ -22,32 +22,17 @@ size_categories:
 - 1M<n<10M
 ---
 
-<div align="center">
-  <table>
-    <tr>
-      <td align="center">
-        <div style="width:180px; height:180px; display:flex; align-items:center; justify-content:center;">
-          <img src="https://www.gobiernatuia.cl/logo/gobiernatuialogo.png" style="max-width:160px; max-height:160px;" />
-        </div>
-      </td>
-      <td align="center">
-        <div style="width:180px; height:180px; display:flex; align-items:center; justify-content:center;">
-          <img src="https://www.gobiernatuia.cl/logo/governancetransparency.png" style="max-width:160px; max-height:160px;" />
-        </div>
-      </td>
-      <td align="center">
-        <div style="width:180px; height:180px; display:flex; align-items:center; justify-content:center;">
-          <img src="https://www.gobiernatuia.cl/logo/subproductos/guardrails.png" style="max-width:160px; max-height:160px;" />
-        </div>
-      </td>
-    </tr>
-    <tr>
-      <td align="center"><strong>Gobierna Tu IA</strong></td>
-      <td align="center"><strong>Governance AI</strong></td>
-      <td align="center"><strong>Runtime Guardrails & Agents</strong></td>
-    </tr>
-  </table>
-</div>
+<p align="center">
+  <img src="https://www.gobiernatuia.cl/logo/gobiernatuialogo.png" alt="Gobierna Tu IA" height="56">
+  &nbsp;&nbsp;&nbsp;&nbsp;
+  <img src="https://www.gobiernatuia.cl/logo/governancetransparency.png" alt="Governance AI" height="56">
+  &nbsp;&nbsp;&nbsp;&nbsp;
+  <img src="https://www.gobiernatuia.cl/logo/subproductos/guardrails.png" alt="Runtime Guardrails &amp; Agents" height="56">
+</p>
+
+<p align="center">
+  <sub><b>Gobierna Tu IA</b> &nbsp;·&nbsp; <b>Governance AI</b> &nbsp;·&nbsp; <b>Runtime Guardrails &amp; Agents</b></sub>
+</p>
 
 # Governance AI Guardrail ES Dataset
 

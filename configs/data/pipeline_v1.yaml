@@ -1,0 +1,22 @@
+# Parámetros de construcción de data_finetune/guardrail_es.parquet.
+# Fuente: scripts/{linux/pipeline.sh, windows/pipeline.ps1}.
+# Estado: registro declarativo. El código todavía no lee este archivo (ver README).
+translate:
+  profile: finetune
+  max_rows_per_label: 60000
+  max_safe_rows: 60000
+  batch_size: 64
+  checkpoint_every: 500
+  max_input_tokens: 256   # trunca la entrada de la traducción
+  max_new_tokens: 256
+build:
+  output: data_finetune/guardrail_es.parquet
+  max_variants_per_row: 2
+  max_train_per_label: 120000
+  max_eval_per_label: 10000
+  max_train_per_source_label: 60000
+splits:                    # codificado en build_dataset.split_for_id, no configurable
+  train: 80
+  validation: 10
+  test: 10
+  seed: null               # la partición no acepta semilla

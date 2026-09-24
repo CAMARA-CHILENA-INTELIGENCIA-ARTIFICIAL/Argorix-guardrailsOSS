@@ -10,7 +10,6 @@ __pycache__/
 *.pyc
 *.pyo
 *.pyd
-.pytest_cache/
 .mypy_cache/
 
 # Virtual environments
@@ -18,23 +17,31 @@ __pycache__/
 venv/
 env/
 
+# uv
+.uv/
+
+# Herramientas
+.ruff_cache/
+.pytest_cache/
+
 # Logs
-logs/
+/logs/
 *.log
 *.pid
 
-# Datasets
-data/
-data_es/
-data_finetune/
+# Datasets (anclados a la raíz: sin la barra inicial, `data/` también
+# silenciaría src/guardrails/data/)
+/data/
+/data_es/
+/data_finetune/
 *.parquet
 *.arrow
 *.csv
 *.jsonl
 
 # Models / training artifacts
-models/
-checkpoints/
+/models/
+/checkpoints/
 *.safetensors
 *.pt
 *.pth
@@ -48,9 +55,9 @@ trainer_state.json
 train_state.json
 
 # Build / cache
-dist/
-build/
-out/
+/dist/
+/build/
+/out/
 .cache/
 coverage/
 
@@ -59,3 +66,8 @@ coverage/
 .idea/
 .DS_Store
 Thumbs.db
+# Documentación de auditoría: no se versiona.
+# El informe del análisis base y el reporte de partes clave se mantienen fuera
+# del control de versiones; los problemas identificados están documentados en el
+# README.md de cada carpeta.
+/docs/

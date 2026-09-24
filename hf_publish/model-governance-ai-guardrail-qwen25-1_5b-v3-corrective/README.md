@@ -17,11 +17,17 @@ tags:
 - runtime-guardrails
 ---
 
-![Gobierna tu IA](https://www.gobiernatuia.cl/logo/gobiernatuialogo.png)
+<p align="center">
+  <img src="https://www.gobiernatuia.cl/logo/gobiernatuialogo.png" alt="Gobierna Tu IA" height="56">
+  &nbsp;&nbsp;&nbsp;&nbsp;
+  <img src="https://www.gobiernatuia.cl/logo/governancetransparency.png" alt="Governance AI" height="56">
+  &nbsp;&nbsp;&nbsp;&nbsp;
+  <img src="https://www.gobiernatuia.cl/logo/subproductos/guardrails.png" alt="Runtime Guardrails &amp; Agents" height="56">
+</p>
 
-![Governance AI](https://www.gobiernatuia.cl/logo/governancetransparency.png)
-
-![Runtime Guardrails & Agents](https://www.gobiernatuia.cl/logo/subproductos/guardrails.png)
+<p align="center">
+  <sub><b>Gobierna Tu IA</b> &nbsp;·&nbsp; <b>Governance AI</b> &nbsp;·&nbsp; <b>Runtime Guardrails &amp; Agents</b></sub>
+</p>
 
 # Governance AI Guardrail Qwen2.5 1.5B v3 Corrective
 

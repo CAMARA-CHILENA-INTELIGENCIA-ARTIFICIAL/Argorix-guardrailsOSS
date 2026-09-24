@@ -1,0 +1,75 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: lint y tests (${{ matrix.os }}, py${{ matrix.python }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        # El proyecto debe funcionar igual en Windows y en Linux.
+        os: [ubuntu-latest, windows-latest]
+        python: ["3.11", "3.12"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Instalar uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Sincronizar entorno
+        # Sólo el grupo dev: la pila de entrenamiento necesita GPU y no se
+        # ejercita aquí. La batería corre sin torch gracias a los sustitutos
+        # de tests/conftest.py.
+        run: uv sync --group dev --python ${{ matrix.python }}
+
+      - name: ruff check
+        run: uv run ruff check .
+
+      - name: ruff format
+        run: uv run ruff format --check .
+
+      - name: pytest
+        run: uv run pytest -m "not integration"
+
+      - name: Comprobar el CLI
+        run: uv run guardrails doctor
+
+  integration:
+    name: entrenamiento en CPU
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Instalar uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Sincronizar con la pila de entrenamiento
+        # En macOS el lock resuelve torch de PyPI (CPU), que es lo que necesita
+        # este trabajo. bitsandbytes queda excluido por marcador de plataforma.
+        run: uv sync --extra train --group dev
+
+      - name: Entrenamiento de extremo a extremo sobre un modelo diminuto
+        run: uv run pytest -m integration -v
+
+  lock:
+    name: uv.lock al día
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - name: El lock debe corresponder a pyproject.toml
+        run: uv lock --check
